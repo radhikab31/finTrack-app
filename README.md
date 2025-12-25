@@ -1,222 +1,299 @@
-# finTrack-app
-Personal Finance Tracker 💰
+# Personal Finance Tracker – Web Application Documentation
 
-A web-based application to help users track daily expenses and incomes, manage multiple payment accounts, categorize spending, and visualize monthly financial insights through charts.
+## 1. Overview
 
-📌 Overview
+The Personal Finance Tracker is a web-based application that enables users to record, categorize, and analyze their day-to-day expenses and incomes on a monthly basis. The platform focuses on clarity, ease of use, and actionable insights through visual statistics (pie charts), while supporting multiple payment platforms and accounts.
 
-The Personal Finance Tracker enables users to record, organize, and analyze their financial activities on a monthly basis. Users can add expenses and incomes, categorize them, track payments across multiple accounts, and view category-wise expense analytics using pie charts.
+The system is designed as a secure, user-centric application with authentication, profile management, and extensible financial categorization.
 
-The application focuses on:
+---
 
-Simplicity
+## 2. Objectives
 
-Accuracy
+* Enable users to track daily expenses and incomes efficiently.
+* Provide clear monthly insights using charts and summaries.
+* Support multiple payment methods and multiple accounts.
+* Allow customizable expense categories with sensible defaults.
+* Ensure a simple, intuitive UI suitable for non-technical users.
+* Provide secure authentication and profile management.
 
-Clear financial insights
+---
 
-Secure authentication
+## 3. Target Users
 
-🎯 Features
-🔐 Authentication
+* Individuals tracking personal finances.
+* Salaried professionals managing monthly budgets.
+* Students or freelancers monitoring income vs expenses.
 
-Sign up using Email & Password
+---
 
-Login using Email & Password
+## 4. Core Features
 
-Google OAuth login/signup
+### 4.1 Authentication & Authorization
 
-Forgot password (email-based reset)
+* User Sign Up
 
-Secure session handling
+  * Email + Password
+  * Google OAuth Sign-Up
+* User Login
 
-👤 User Profile
+  * Email + Password
+  * Google OAuth Login
+* Forgot Password
 
-Upload/update profile photo
+  * Email-based password reset
+* Secure session handling
 
-Update personal details
+---
 
-Change password
+### 4.2 User Profile Management
 
-Delete account permanently
+* View Profile
+* Upload / Update Profile Photo
+* Update Personal Information
 
-💸 Expense Management
+  * Mobile Number
+  * Password Change
+* Account Deletion (Permanent)
 
-Add, edit, and delete expenses
+---
 
-Mandatory fields:
+### 4.3 Expense Management
 
-Date
+#### Add Expense (Mandatory Fields Enforced)
 
-Category
+Each expense entry includes:
 
-Amount
+* Date (required)
+* Expense Name / Title (required)
+* Category (required)
+* Amount (required)
 
-Payment platform
+  * Numeric input
+  * Calculator-style input option
+* Payment Platform (required)
 
-Fields supported:
+  * Cash
+  * Account
+* Payment Account (required if platform = Account)
+* Description / Notes (optional)
 
-Expense name
+#### Expense Actions
 
-Description (optional)
+* View expense list (date-wise / category-wise)
+* Edit expense
+* Delete expense
 
-Calculator-style amount input (instead of increment/decrement buttons)
+---
 
-Conditional account selection (mandatory if payment platform is Account)
+### 4.4 Income Management
 
-💰 Income Management
+* Add Income
 
-Add, edit, and delete income records
+  * Date
+  * Source / Name
+  * Amount
+  * Account credited
+  * Notes (optional)
+* Edit Income
+* Delete Income
 
-Track income source and credited account
+---
 
-Monthly income summaries
+### 4.5 Categories Management
 
-🗂 Expense Categories
-Default Categories (preloaded)
+#### Default Categories (Preloaded)
 
-Household
+At least 5–6 default categories:
 
-Food
+* Household
+* Food
+* Travel
+* Shopping
+* Grooming
+* Utilities
 
-Travel
+#### Custom Categories
 
-Shopping
+* Create new category
+* Edit category name
+* Delete category (with validation if used)
 
-Grooming
+---
 
-Utilities
+### 4.6 Payment Platforms & Accounts
 
-Custom Categories
+#### Payment Platforms
 
-Create, edit, and delete categories
+* Cash
+* Account
 
-Validation to prevent deleting categories in use
+#### Account Management
 
-🏦 Payment Platforms & Accounts
+* Add multiple accounts (e.g., Bank, Wallet, Credit Card)
+* Account attributes:
 
-Payment platforms:
+  * Account Name
+  * Type (Bank / Wallet / Card)
+  * Optional balance tracking
+* Select account while adding expense/income
 
-Cash
+---
 
-Account
+### 4.7 Analytics & Reports
 
-Multiple account support:
+#### Monthly Dashboard
 
-Bank accounts
+* Total Expenses (Monthly)
+* Total Income (Monthly)
+* Net Balance
 
-Wallets
+#### Visual Reports
 
-Cards
+* Pie Chart: Expense distribution by category
+* Optional future extensions:
 
-Track which account was used for each transaction
+  * Bar chart: Month-over-month comparison
+  * Account-wise expense summary
 
-📊 Analytics & Dashboard
+---
 
-Monthly summary:
+## 5. UI / UX Structure (UI References)
 
-Total expenses
+### 5.1 Landing Page (Public)
 
-Total income
+* Header
 
-Net balance
+  * Brand Logo
+  * Login Button
+  * Signup Button
+* Main Section
 
-Pie chart visualization:
+  * Application overview
+  * Key features highlights
+  * Call-to-action (Get Started)
+* Footer
 
-Category-wise expense breakdown
+  * Social Media Links
+  * Privacy Policy
+  * Terms & Conditions
+  * Help / FAQ
+  * Contact Us
 
-Recent transactions list
+---
 
-🖥 UI Structure
-Public Pages
+### 5.2 Authentication Pages
 
-Landing page with:
+* Login Page
+* Signup Page
+* Forgot Password Page
 
-Header (Logo, Login, Signup)
+Design principles:
 
-Application overview
+* Minimal form fields
+* Clear error messages
+* Responsive layout
 
-Feature highlights
+---
 
-Footer (Social links, Policies, Terms, Help, Contact)
+### 5.3 User Dashboard (Post Login)
 
-Auth Pages
+#### Header
 
-Login
+* Brand Logo
+* Navigation Menu
 
-Signup
+  * Dashboard
+  * Expenses
+  * Income
+  * Categories
+  * Accounts
+  * Profile
+* Logout Option
 
-Forgot Password
+#### Main Dashboard Content
 
-User Dashboard
+* Monthly Summary Cards
+* Pie Chart (Category-wise Expenses)
+* Recent Transactions List
 
-Monthly financial overview
+---
 
-Expense analytics (Pie chart)
+### 5.4 Expense Form UI
 
-Navigation:
+* Date Picker
+* Category Dropdown (mandatory)
+* Expense Name Input
+* Amount Input
 
-Dashboard
+  * Calculator popup instead of increment/decrement
+* Payment Platform Selector
+* Account Dropdown (conditional, mandatory)
+* Notes Text Area
+* Save / Cancel Buttons
 
-Expenses
+---
 
-Income
+### 5.5 Profile Page UI
 
-Categories
+* Profile Photo Upload
+* Personal Information Form
+* Change Password
+* Delete Account Button (with confirmation)
 
-Accounts
+---
 
-Profile
+## 6. Functional Requirements (Refined)
 
-Logout
+* Category and Payment Account are mandatory for expenses.
+* Account selection is conditionally required based on payment platform.
+* No expense can be saved without a valid amount.
+* Default categories must exist on first login.
+* Deleting an account or category must validate existing dependencies.
+* Charts update dynamically based on selected month.
 
-⚙ Functional Requirements
+---
 
-Category and payment method are mandatory for expenses
+## 7. Non-Functional Requirements
 
-Account selection is mandatory if payment platform is Account
+* Responsive design (Desktop & Mobile)
+* Secure authentication and password encryption
+* Scalable architecture
+* Clean and consistent UI
+* Fast load times
 
-Default categories are auto-created on first login
+---
 
-Expenses and incomes can be edited or deleted
+## 8. Suggested Tech Stack (Optional Guidance)
 
-Charts update dynamically based on selected month
+### Frontend
 
-🚀 Tech Stack (Suggested)
-Frontend
+* React (with TypeScript)
+* State Management: Redux / Context API
+* UI: Tailwind CSS / Material UI
+* Charts: Chart.js / Recharts
 
-React (TypeScript)
+### Backend
 
-Tailwind CSS / Material UI
+* Node.js + Express
+* Authentication: JWT + Google OAuth
 
-Chart.js / Recharts
+### Database
 
-Backend
+* MongoDB
 
-Node.js
+---
 
-Express.js
+## 9. Future Enhancements
 
-JWT Authentication
+* Budget limits and alerts
+* Export data (PDF / CSV)
+* Recurring expenses
+* Dark mode
+* Mobile app version
 
-Google OAuth
+---
 
-Database
+## 10. Conclusion
 
-MongoDB
-
-📈 Future Enhancements
-
-Monthly budget limits and alerts
-
-Recurring expenses
-
-Export data (CSV / PDF)
-
-Dark mode
-
-Mobile application
-
-📄 License
-
-This project is licensed under the MIT License.
+This documentation defines a clear, scalable foundation for building a personal finance tracking web application. The structure allows incremental enhancements while maintaining a clean user experience and strong data organization.
