@@ -1,9 +1,12 @@
 import {useState} from "react";
 import {Outlet} from "react-router-dom";
-import Header from "./Component/Header.jsx";
-import Footer from "./Component/Footer.jsx";
+import Header from "./Component/common/Header.jsx";
+import Footer from "./Component/common/Footer.jsx";
 
 function App() {
+  const pageURL = window.location.pathname;
+  console.log(pageURL);
+
   return (
     <>
       <Header />
