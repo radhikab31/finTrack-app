@@ -1,8 +1,8 @@
-import {createContext, use} from "react";
+import {createContext, useContext, use, useState, useEffect} from "react";
 import {initializeApp} from "firebase/app";
 import {getAnalytics} from "firebase/analytics";
-import {getDatabase, ref, set} from "firebase/database";
-import {getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
+import {getDatabase, ref, set, get} from "firebase/database";
+import {getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 
 const FirebaseContext = createContext(null);
 
@@ -17,6 +17,21 @@ const firebaseConfig = {
   databaseURL: "https://fintrack-app-9589d-default-rtdb.firebaseio.com/",
 };
 
+// Default data blueprint
+const DEFAULT_USER_DATA = {
+  finance: {
+    currentBalance: 0,
+    totalIncome: 0,
+    totalExpense: 0,
+    sourceAccounts: [], // Initial empty list
+  },
+  settings: {
+    expenseCategories: ["food", "transport", "household", "health", "education", "savings", "entertainment"],
+    incomeCategories: ["Salary", "Allowance", "Petty Cash", "Bonus"],
+    paymentPlatforms: ["Cash", "Account"],
+  },
+};
+
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
@@ -24,7 +39,31 @@ const db = getDatabase(app);
 
 const firebaseAuth = getAuth(app);
 
+export let userDet = null;
+
 export function FirebaseProvider(props) {
+  const [user, setUser] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+  // 2. Use useEffect to listen for auth changes (Session Persistence)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+
+        const userRef = ref(db, `user/${currentUser.uid}`);
+        const snapshot = await get(userRef);
+        if (snapshot.exists()) {
+          setUserData(snapshot.val()); // Store your financial data in state
+        }
+      } else {
+        setUser(null);
+        setUserData(null);
+      }
+    });
+    return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
+
   const storeData = async (path, data) => {
     await set(ref(db, path), data);
   };
@@ -32,9 +71,15 @@ export function FirebaseProvider(props) {
   const createUserwithEmailPassword = async (fname, lname, email, password) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      const user = userCredential.user;
-      // Store additional user information (e.g., name) in the database
-      await storeData(`users/${user.uid}`, {name: `${fname} ${lname}`, email});
+      const newUser = userCredential.user;
+
+      // Merge profile info with default schema
+      await storeData(`users/${newUser.uid}`, {
+        profile: {name: `${fname} ${lname}`, email},
+        ...DEFAULT_USER_DATA, // Spread the defaults here
+        createdAt: new Date().toISOString(),
+      });
+
       return userCredential;
     } catch (error) {
       console.error("Error signing up user:", error);
@@ -43,9 +88,8 @@ export function FirebaseProvider(props) {
 
   const signInUser = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-      console.log("User signed in:", userCredential);
-      return userCredential; // Add this return statement!
+      const result = await signInWithEmailAndPassword(firebaseAuth, email, password);
+      return result;
     } catch (error) {
       console.error("Invalid user credentials:", error);
       return null;
@@ -56,7 +100,22 @@ export function FirebaseProvider(props) {
     const provider = new GoogleAuthProvider();
     try {
       const response = await signInWithPopup(firebaseAuth, provider);
-      console.log("Google sign-in successful:", response);
+      const googleUser = response.user;
+
+      const userRef = ref(db, `users/${googleUser.uid}`);
+      const snapshot = await get(userRef);
+
+      // Only write if it's a first-time login
+      if (!snapshot.exists()) {
+        await storeData(`users/${googleUser.uid}`, {
+          profile: {
+            name: googleUser.displayName,
+            email: googleUser.email,
+          },
+          ...DEFAULT_USER_DATA, // Apply defaults for new user
+          createdAt: new Date().toISOString(),
+        });
+      }
       return response;
     } catch (error) {
       console.error("Error during Google sign-in:", error);
@@ -67,12 +126,29 @@ export function FirebaseProvider(props) {
   const logoutuser = async () => {
     try {
       await signOut(firebaseAuth);
-      console.log("User signed out successfully");
+      setUser(null);
     } catch (error) {
       console.error("Error signing out user:", error);
     }
   };
-  return <FirebaseContext.Provider value={{storeData, createUser: createUserwithEmailPassword, signInUser, logoutuser, createUserwithGoogle}}>{props.children}</FirebaseContext.Provider>;
+
+  // Pass 'user' (state) in the value object instead of 'userDet'
+  return (
+    <FirebaseContext.Provider
+      value={{
+        storeData,
+        createUser: createUserwithEmailPassword,
+        signInUser,
+        logoutuser,
+        createUserwithGoogle,
+        user: user, // Access this as firebase.user in components
+        userData,
+      }}
+    >
+      {props.children}
+    </FirebaseContext.Provider>
+  );
 }
 
-export const useFirebase = () => use(FirebaseContext);
+// Custom hook
+export const useFirebase = () => useContext(FirebaseContext);

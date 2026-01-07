@@ -13,7 +13,7 @@ export default function SignUpPage() {
 
   const handleSignUp = async () => {
     const res = await firebase.createUser(firstName, lastName, email, password);
-    console.log(res);
+    // console.log(res);
 
     if (res) {
       navigate("/dashboard");
@@ -22,8 +22,8 @@ export default function SignUpPage() {
 
   const signUpGoogle = async () => {
     const res = await firebase.createUserwithGoogle();
-    firebase.storeData(`users/${res.user.uid}`, {name: `${res.user.displayName}`, email: res.user.email});
-    console.log(res);
+    // firebase.storeData(`users/${res.user.uid}`, {name: `${res.user.displayName}`, email: res.user.email});
+    // console.log(res);
     if (res) {
       navigate("/dashboard");
     }

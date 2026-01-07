@@ -5,7 +5,7 @@ import Footer from "./Component/common/Footer.jsx";
 
 function App() {
   const pageURL = window.location.pathname;
-  console.log(pageURL);
+  // console.log(pageURL);
 
   return (
     <>

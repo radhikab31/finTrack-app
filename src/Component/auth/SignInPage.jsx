@@ -10,12 +10,12 @@ export default function SignInPage() {
   const [password, setPassword] = useState("");
   const firebase = useFirebase();
   const [showPassword, setShowPassword] = useState(false);
-  console.log(firebase);
+  // console.log(firebase);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     const res = await firebase.signInUser(email, password);
-    console.log(res);
+    // console.log(res);
     if (res) {
       navigate("/dashboard");
     } else {
@@ -25,7 +25,7 @@ export default function SignInPage() {
 
   const signInGoogle = async () => {
     const res = await firebase.createUserwithGoogle();
-    console.log(res);
+    // console.log(res);
     if (res) {
       navigate("/dashboard");
     }
