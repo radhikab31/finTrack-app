@@ -44,24 +44,25 @@ export let userDet = null;
 export function FirebaseProvider(props) {
   const [user, setUser] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [loading, setLoading] = useState(true); // Add a loading state
 
-  // 2. Use useEffect to listen for auth changes (Session Persistence)
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
+      setLoading(true); // Start loading when auth changes
       if (currentUser) {
         setUser(currentUser);
-
-        const userRef = ref(db, `user/${currentUser.uid}`);
+        const userRef = ref(db, `users/${currentUser.uid}`);
         const snapshot = await get(userRef);
         if (snapshot.exists()) {
-          setUserData(snapshot.val()); // Store your financial data in state
+          setUserData(snapshot.val());
         }
       } else {
         setUser(null);
         setUserData(null);
       }
+      setLoading(false); // Stop loading once data is fetched or user is null
     });
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   const storeData = async (path, data) => {
@@ -143,6 +144,7 @@ export function FirebaseProvider(props) {
         createUserwithGoogle,
         user: user, // Access this as firebase.user in components
         userData,
+        loading,
       }}
     >
       {props.children}

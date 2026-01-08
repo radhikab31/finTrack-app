@@ -19,8 +19,8 @@ export default function DashHeader() {
   return (
     <header className="flex py-5 px-15 justify-between items-center border-b border-gray-300 sticky top-0 w-full bg-white">
       <Link to="/" className="flex gap-2 items-center">
-        <span className="bg-black text-white size-8 text-xl font-bold flex items-center justify-center rounded-lg">F</span>
-        <span>Fintrack</span>
+        <span className="bg-black text-white size-10 text-xl font-bold flex items-center justify-center rounded-lg">F</span>
+        <span className="text-2xl font-bold">FinTrack</span>
       </Link>
 
       <div className="flex gap-4 items-center">

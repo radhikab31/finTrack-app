@@ -4,7 +4,7 @@ export default function Header() {
     <header className="flex py-5 px-15 justify-between items-center border-b border-gray-300 sticky top-0 w-full bg-white">
       <Link to="/" className="flex gap-2 items-center">
         <span className="bg-black text-white size-10 text-xl font-bold flex items-center justify-center rounded-lg">F</span>
-        <span className="text-2xl font-bold">Fintrack</span>
+        <span className="text-2xl font-bold">FinTrack</span>
       </Link>
       <nav className="flex gap-4">
         <NavLink to="/" className={({isActive}) => (isActive ? "font-bold " : "")}>
