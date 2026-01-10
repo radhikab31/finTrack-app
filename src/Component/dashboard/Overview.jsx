@@ -133,7 +133,7 @@ export function Overview({userData}) {
           <span>{userData?.finance?.totalExpense ?? 0}</span>
         </div>
       </div>
-      <div className="inline-flex flex-col gap-4 bg-amber-600 p-2">
+      <div className="inline-flex flex-col gap-4 p-2">
         <div id="view-tabs" className="bg-gray-200 rounded-lg shadow py-1 px-2 gap-4 inline-flex">
           <button
             className={clsx("hover:cursor-pointer p-2", currentTab == "transactions" && "bg-white rounded-md shadow")}
@@ -167,17 +167,22 @@ export function Overview({userData}) {
           >
             Categories
           </button>
-          <button
+          {/* <button
             className={clsx("hover:cursor-pointer p-2", currentTab == "accounts" && "bg-white rounded-md shadow")}
             onClick={() => {
               setCurrentTab("accounts");
             }}
           >
             Accounts
-          </button>
+          </button> */}
         </div>
+
         <div>
-            
+          {currentTab === "transactions" && <Transactions />}
+          {currentTab === "expense" && <Expense userData={userData} />}
+          {currentTab === "income" && <Income userData={userData} />}
+          {currentTab === "categories" && <Category userData={userData} />}
+          {/* {currentTab === "accounts" && <Accounts />} */}
         </div>
       </div>
     </div>

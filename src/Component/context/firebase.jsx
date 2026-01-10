@@ -23,12 +23,35 @@ const DEFAULT_USER_DATA = {
     currentBalance: 0,
     totalIncome: 0,
     totalExpense: 0,
-    sourceAccounts: [], // Initial empty list
+    // Using an object for accounts to prevent deletion if all are removed
+    sourceAccounts: {
+      initialized: true,
+    },
   },
   settings: {
-    expenseCategories: ["food", "transport", "household", "health", "education", "savings", "entertainment"],
-    incomeCategories: ["Salary", "Allowance", "Petty Cash", "Bonus"],
-    paymentPlatforms: ["Cash", "Account"],
+    // Objects with 'true' values prevent key deletion and automatic duplicates
+    expenseCategories: {
+      food: true,
+      transport: true,
+      household: true,
+      health: true,
+      education: true,
+      savings: true,
+      entertainment: true,
+      initialized: true, // This key ensures 'expenseCategories' is never deleted
+    },
+    incomeCategories: {
+      salary: true,
+      allowance: true,
+      "petty cash": true,
+      bonus: true,
+      initialized: true,
+    },
+    paymentPlatforms: {
+      cash: true,
+      account: true,
+      initialized: true,
+    },
   },
 };
 
@@ -69,23 +92,23 @@ export function FirebaseProvider(props) {
     await set(ref(db, path), data);
   };
 
-  const createUserwithEmailPassword = async (fname, lname, email, password) => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-      const newUser = userCredential.user;
+  // const createUserwithEmailPassword = async (fname, lname, email, password) => {
+  //   try {
+  //     const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+  //     const newUser = userCredential.user;
 
-      // Merge profile info with default schema
-      await storeData(`users/${newUser.uid}`, {
-        profile: {name: `${fname} ${lname}`, email},
-        ...DEFAULT_USER_DATA, // Spread the defaults here
-        createdAt: new Date().toISOString(),
-      });
+  //     // Merge profile info with default schema
+  //     await storeData(`users/${newUser.uid}`, {
+  //       profile: {name: `${fname} ${lname}`, email},
+  //       ...DEFAULT_USER_DATA, // Spread the defaults here
+  //       createdAt: new Date().toISOString(),
+  //     });
 
-      return userCredential;
-    } catch (error) {
-      console.error("Error signing up user:", error);
-    }
-  };
+  //     return userCredential;
+  //   } catch (error) {
+  //     console.error("Error signing up user:", error);
+  //   }
+  // };
 
   const signInUser = async (email, password) => {
     try {
@@ -97,6 +120,9 @@ export function FirebaseProvider(props) {
     }
   };
 
+  // firebase.jsx
+
+  // 1. Update Google Sign-Up
   const createUserwithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
@@ -106,21 +132,48 @@ export function FirebaseProvider(props) {
       const userRef = ref(db, `users/${googleUser.uid}`);
       const snapshot = await get(userRef);
 
-      // Only write if it's a first-time login
       if (!snapshot.exists()) {
-        await storeData(`users/${googleUser.uid}`, {
+        const initialData = {
           profile: {
             name: googleUser.displayName,
             email: googleUser.email,
           },
-          ...DEFAULT_USER_DATA, // Apply defaults for new user
+          ...DEFAULT_USER_DATA,
           createdAt: new Date().toISOString(),
-        });
+        };
+
+        await storeData(`users/${googleUser.uid}`, initialData);
+
+        // FIX: Manually set state so Dashboard.jsx gets it immediately
+        setUserData(initialData);
       }
       return response;
     } catch (error) {
       console.error("Error during Google sign-in:", error);
       return null;
+    }
+  };
+
+  // 2. Update Email Sign-Up
+  const createUserwithEmailPassword = async (fname, lname, email, password) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+      const newUser = userCredential.user;
+
+      const initialData = {
+        profile: {name: `${fname} ${lname}`, email},
+        ...DEFAULT_USER_DATA,
+        createdAt: new Date().toISOString(),
+      };
+
+      await storeData(`users/${newUser.uid}`, initialData);
+
+      // FIX: Manually set state so Dashboard.jsx gets it immediately
+      setUserData(initialData);
+
+      return userCredential;
+    } catch (error) {
+      console.error("Error signing up user:", error);
     }
   };
 
