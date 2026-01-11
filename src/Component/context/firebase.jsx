@@ -1,7 +1,7 @@
 import {createContext, useContext, use, useState, useEffect} from "react";
 import {initializeApp} from "firebase/app";
 import {getAnalytics} from "firebase/analytics";
-import {getDatabase, ref, set, get} from "firebase/database";
+import {getDatabase, ref, set, get, onValue} from "firebase/database";
 import {getAuth, createUserWithEmailAndPassword, onAuthStateChanged, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup} from "firebase/auth";
 
 const FirebaseContext = createContext(null);
@@ -70,22 +70,28 @@ export function FirebaseProvider(props) {
   const [loading, setLoading] = useState(true); // Add a loading state
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, async (currentUser) => {
-      setLoading(true); // Start loading when auth changes
+    const unsubscribeAuth = onAuthStateChanged(firebaseAuth, (currentUser) => {
+      setLoading(true);
       if (currentUser) {
         setUser(currentUser);
         const userRef = ref(db, `users/${currentUser.uid}`);
-        const snapshot = await get(userRef);
-        if (snapshot.exists()) {
-          setUserData(snapshot.val());
-        }
+
+        // Use onValue for real-time updates
+        const unsubscribeDb = onValue(userRef, (snapshot) => {
+          if (snapshot.exists()) {
+            setUserData(snapshot.val());
+          }
+          setLoading(false);
+        });
+
+        return () => unsubscribeDb();
       } else {
         setUser(null);
         setUserData(null);
+        setLoading(false);
       }
-      setLoading(false); // Stop loading once data is fetched or user is null
     });
-    return () => unsubscribe();
+    return () => unsubscribeAuth();
   }, []);
 
   const storeData = async (path, data) => {
@@ -195,9 +201,10 @@ export function FirebaseProvider(props) {
         signInUser,
         logoutuser,
         createUserwithGoogle,
-        user: user, // Access this as firebase.user in components
+        user,
         userData,
         loading,
+        db,
       }}
     >
       {props.children}

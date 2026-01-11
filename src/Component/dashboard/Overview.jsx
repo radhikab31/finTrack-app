@@ -167,22 +167,22 @@ export function Overview({userData}) {
           >
             Categories
           </button>
-          {/* <button
+          <button
             className={clsx("hover:cursor-pointer p-2", currentTab == "accounts" && "bg-white rounded-md shadow")}
             onClick={() => {
               setCurrentTab("accounts");
             }}
           >
             Accounts
-          </button> */}
+          </button>
         </div>
 
         <div>
-          {currentTab === "transactions" && <Transactions />}
+          {currentTab === "transactions" && <Transactions userData={userData} />}
           {currentTab === "expense" && <Expense userData={userData} />}
           {currentTab === "income" && <Income userData={userData} />}
           {currentTab === "categories" && <Category userData={userData} />}
-          {/* {currentTab === "accounts" && <Accounts />} */}
+          {currentTab === "accounts" && <Accounts />}
         </div>
       </div>
     </div>

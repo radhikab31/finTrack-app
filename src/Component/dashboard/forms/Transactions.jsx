@@ -33,7 +33,7 @@ export default function Transactions({userData}) {
               </td>
               <td className="py-4 px-2">{t.category}</td>
               <td className="py-4 px-2">{t.account}</td>
-              <td className={`py-4 px-2 font-bold ${t.type === "Expense" ? "text-red-600" : "text-green-600"}`}>{t.type === "Expense" ? `-$${t.amount.toFixed(2)}` : `+$${t.amount.toFixed(2)}`}</td>
+              <td className={`py-4 px-2 font-bold ${t.type === "Expense" ? "text-red-600" : "text-green-600"}`}>{t.type === "Expense" ? `-${t.amount.toFixed(2)}` : `+${t.amount.toFixed(2)}`}</td>
               <td className="py-4 px-2 text-center">
                 <button className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
                   <Trash2 size={18} />

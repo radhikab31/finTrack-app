@@ -4,6 +4,7 @@ import CalculatorModal from "../CalculatorModal";
 import {LuCalculator} from "react-icons/lu";
 import CustomDropdown from "../CustomDropdown";
 import {useFirebase} from "../../context/firebase";
+import {ref, push, set, runTransaction} from "firebase/database";
 
 export default function Expense({userData}) {
   const [expenseName, setExpenseName] = useState("");
@@ -60,6 +61,8 @@ export default function Expense({userData}) {
       setAmount("");
       setExpenseName("");
       setDetails("");
+
+      console.log("check the new data?", userData);
     } catch (error) {
       console.error("Error adding expense:", error);
     }
