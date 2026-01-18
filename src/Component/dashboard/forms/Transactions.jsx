@@ -1,7 +1,8 @@
 import {Trash2} from "lucide-react";
+import {formatNumber} from "../../utility/Number";
 
 export default function Transactions({userData}) {
-  // Convert transactions object to array
+  // Convert transactions object to array safely
   const transactionList = userData?.transactions ? Object.entries(userData.transactions).map(([id, data]) => ({id, ...data})) : [];
 
   return (
@@ -24,23 +25,36 @@ export default function Transactions({userData}) {
           </tr>
         </thead>
         <tbody>
-          {transactionList.map((t) => (
-            <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
-              <td className="py-4 px-2">{t.date}</td>
-              <td className="py-4 px-2 font-bold">{t.name}</td>
-              <td className="py-4 px-2">
-                <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${t.type === "Expense" ? "bg-red-500" : "bg-green-500"}`}>{t.type}</span>
-              </td>
-              <td className="py-4 px-2">{t.category}</td>
-              <td className="py-4 px-2">{t.account}</td>
-              <td className={`py-4 px-2 font-bold ${t.type === "Expense" ? "text-red-600" : "text-green-600"}`}>{t.type === "Expense" ? `-${t.amount.toFixed(2)}` : `+${t.amount.toFixed(2)}`}</td>
-              <td className="py-4 px-2 text-center">
-                <button className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
-                  <Trash2 size={18} />
-                </button>
+          {transactionList.length > 0 ? (
+            transactionList.map((t) => {
+              // Convert YYYY-MM-DD to DD-MM-YYYY for display
+              const [year, month, day] = t.date.split("-");
+              const displayDate = `${day}-${month}-${year.slice(-2)}`;
+              return (
+                <tr key={t.id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                  <td className="py-4 px-2">{displayDate}</td>
+                  <td className="py-4 px-2 font-bold">{t.name}</td>
+                  <td className="py-4 px-2">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold text-white ${t.type === "Expense" ? "bg-red-500" : "bg-green-500"}`}>{t.type}</span>
+                  </td>
+                  <td className="py-4 px-2">{t.category}</td>
+                  <td className="py-4 px-2">{t.account}</td>
+                  <td className={`py-4 px-2 font-bold ${t.type === "Expense" ? "text-red-600" : "text-green-600"}`}>{t.type === "Expense" ? `${formatNumber(t.amount)}` : `${formatNumber(t.amount)}`}</td>
+                  <td className="py-4 px-2 text-center">
+                    <button className="text-red-500 hover:bg-red-50 p-2 rounded-full transition-colors">
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="7" className="py-10 text-center text-gray-400">
+                No transactions found.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>

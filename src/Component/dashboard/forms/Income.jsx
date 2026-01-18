@@ -7,7 +7,7 @@ import {ref, push, set, runTransaction} from "firebase/database"; // 1. ADDED MI
 export default function Income({userData}) {
   const [source, setSource] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("2026-01-10");
+  const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [account, setAccount] = useState("");
   const [category, setCategory] = useState("");
   const [details, setDetails] = useState("");
@@ -80,7 +80,7 @@ export default function Income({userData}) {
           <label className="text-sm font-semibold text-gray-700">
             Amount <span className="text-red-500">*</span>
           </label>
-          <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" min="0" step="0.01" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none" placeholder="0.00" />
+          <input value={amount} onWheel={(e) => e.target.blur()} onChange={(e) => setAmount(e.target.value)} type="number" min="0" step="0.01" className="w-full border border-gray-300 rounded-lg p-2.5 outline-none" placeholder="0.00" />
         </div>
 
         <div className="flex flex-col gap-2">

@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useRef, useEffect} from "react";
 import {PlusCircle} from "lucide-react";
 import CalculatorModal from "../CalculatorModal";
 import {LuCalculator} from "react-icons/lu";
@@ -6,22 +6,67 @@ import CustomDropdown from "../CustomDropdown";
 import {useFirebase} from "../../context/firebase";
 import {ref, push, set, runTransaction} from "firebase/database";
 
+const getTodayDate = () => {
+  return new Date().toISOString().split("T")[0];
+};
+
 export default function Expense({userData}) {
   const [expenseName, setExpenseName] = useState("");
   const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("2026-01-10");
+  const [date, setDate] = useState(getTodayDate());
   const [category, setCategory] = useState("");
   const [account, setAccount] = useState("");
   const [details, setDetails] = useState("");
   const [showCalc, setShowCalc] = useState(false);
   const firebase = useFirebase();
+  const inputRef = useRef(null);
 
-  // --- NEW LOGIC: Convert Objects to Arrays ---
-  // We extract the keys and filter out the 'initialized' marker
+  useEffect(() => {
+    const handleWheel = (e) => {
+      e.preventDefault();
+    };
+
+    const currentInput = inputRef.current;
+    if (currentInput) {
+      currentInput.addEventListener("wheel", handleWheel, {passive: false});
+    }
+
+    return () => {
+      if (currentInput) {
+        currentInput.removeEventListener("wheel", handleWheel);
+      }
+    };
+  }, []);
+
+  // Logic: Convert Objects to Arrays
   const expenseCategories = Object.keys(userData?.settings?.expenseCategories || {}).filter((key) => key !== "initialized");
 
   const paymentPlatforms = Object.keys(userData?.settings?.paymentPlatforms || {}).filter((key) => key !== "initialized");
-  // --------------------------------------------
+
+  // --- STRICT NUMBER VALIDATION ---
+  const handleAmountChange = (e) => {
+    const val = e.target.value;
+
+    /**
+     * Regex Breakdown:
+     * ^\d* -> Starts with any number of digits
+     * (\.\d{0,2})? -> Allows one optional decimal point followed by max 2 digits
+     * $           -> End of string
+     */
+    const regex = /^\d*(\.\d{0,2})?$/;
+
+    if (regex.test(val) || val === "") {
+      setAmount(val);
+    }
+  };
+
+  const handleAmountKeyDown = (e) => {
+    // Specifically block the 'e' key, plus, and minus signs
+    if (["e", "E", "+", "-"].includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
   const handleAddExpense = async () => {
     if (!amount || !category || !account) {
       alert("Please fill in all required fields");
@@ -41,12 +86,10 @@ export default function Expense({userData}) {
     };
 
     try {
-      // 1. Add to Transactions List
       const transRef = ref(firebase.db, `users/${firebase.user.uid}/transactions`);
-      const newTransRef = push(transRef); // Generates unique ID
+      const newTransRef = push(transRef);
       await set(newTransRef, transactionData);
 
-      // 2. Update Financial Totals (Atomic Update)
       const financeRef = ref(firebase.db, `users/${firebase.user.uid}/finance`);
       await runTransaction(financeRef, (currentData) => {
         if (currentData) {
@@ -57,16 +100,14 @@ export default function Expense({userData}) {
       });
 
       alert("Expense Added Successfully!");
-      // Reset Form
       setAmount("");
       setExpenseName("");
       setDetails("");
-
-      console.log("check the new data?", userData);
     } catch (error) {
       console.error("Error adding expense:", error);
     }
   };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
       <div className="mb-6">
@@ -87,7 +128,7 @@ export default function Expense({userData}) {
             Amount <span className="text-red-500">*</span>
           </label>
           <div className="flex gap-2">
-            <input value={amount} onChange={(e) => setAmount(e.target.value)} type="number" min="0" step="0.01" placeholder="0.00" className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-black outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-auto [&::-webkit-inner-spin-button]:appearance-auto" />
+            <input ref={inputRef} value={amount} onChange={handleAmountChange} onKeyDown={handleAmountKeyDown} type="text" inputMode="decimal" placeholder="0.00" className="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-black outline-none transition-all" />
             <button type="button" onClick={() => setShowCalc(true)} className="p-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-all flex items-center justify-center shadow-sm">
               <LuCalculator size={20} />
             </button>
@@ -126,7 +167,9 @@ export default function Expense({userData}) {
           <CalculatorModal
             onClose={() => setShowCalc(false)}
             onConfirm={(value) => {
-              setAmount(value);
+              // Ensure the value from calculator also respects the 2 decimal limit
+              const formattedCalcValue = parseFloat(value).toFixed(2);
+              setAmount(formattedCalcValue);
               setShowCalc(false);
             }}
           />
