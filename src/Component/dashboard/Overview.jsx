@@ -36,7 +36,7 @@ export function Overview({userData}) {
   };
 
   return (
-    <div className="py-8 px-15 bg-white">
+    <div className="py-8 px-15  ">
       <div className="flex justify-between mb-8">
         <div className="flex flex-col gap-1">
           <h1 className="text-3xl font-bold text-gray-900">Monthly Overview</h1>
@@ -110,7 +110,7 @@ export function Overview({userData}) {
           </div>
         </div>
       </div>
-      <div id="balance-tags" className="flex gap-2.5 mb-8">
+      <div id="balance-tags" className="flex gap-2.5 mb-8 ">
         <div className="border p-10 rounded-lg shadow w-1/3 h-30 flex flex-col justify-center gap-5 font-bold bg-black text-white">
           <div className="flex justify-between gap-1">
             <span className="text-lg">Current Balance</span>
@@ -133,57 +133,63 @@ export function Overview({userData}) {
           <span>{userData?.finance?.totalExpense ?? 0}</span>
         </div>
       </div>
-      <div className="inline-flex flex-col gap-4 p-2">
-        <div id="view-tabs" className="bg-gray-200 rounded-lg shadow py-1 px-2 gap-4 inline-flex">
-          <button
-            className={clsx("hover:cursor-pointer p-2", currentTab == "transactions" && "bg-white rounded-md shadow")}
-            onClick={() => {
-              setCurrentTab("transactions");
-            }}
-          >
-            Transactions
-          </button>
-          <button
-            className={clsx("hover:cursor-pointer p-2", currentTab == "expense" && "bg-white rounded-md shadow")}
-            onClick={() => {
-              setCurrentTab("expense");
-            }}
-          >
-            Add Expense
-          </button>
-          <button
-            className={clsx("hover:cursor-pointer p-2", currentTab == "income" && "bg-white rounded-md shadow")}
-            onClick={() => {
-              setCurrentTab("income");
-            }}
-          >
-            Add Income
-          </button>
-          <button
-            className={clsx("hover:cursor-pointer p-2", currentTab == "categories" && "bg-white rounded-md")}
-            onClick={() => {
-              setCurrentTab("categories");
-            }}
-          >
-            Categories
-          </button>
-          <button
-            className={clsx("hover:cursor-pointer p-2", currentTab == "accounts" && "bg-white rounded-md shadow")}
-            onClick={() => {
-              setCurrentTab("accounts");
-            }}
-          >
-            Accounts
-          </button>
-        </div>
 
-        <div>
-          {currentTab === "transactions" && <Transactions userData={userData} />}
-          {currentTab === "expense" && <Expense userData={userData} />}
-          {currentTab === "income" && <Income userData={userData} />}
-          {currentTab === "categories" && <Category userData={userData} />}
-          {currentTab === "accounts" && <Accounts />}
+      <div className="flex gap-2 ">
+        <div className="flex flex-col flex-1 gap-4 p-2 ">
+          <div className="flex">
+            <div id="view-tabs" className="bg-gray-200 rounded-lg shadow py-1 px-2 gap-4 flex justify-between w-full">
+              <button
+                className={clsx("hover:cursor-pointer py-2 px-4", currentTab == "transactions" && "bg-white rounded-md shadow")}
+                onClick={() => {
+                  setCurrentTab("transactions");
+                }}
+              >
+                Transactions
+              </button>
+              <button
+                className={clsx("hover:cursor-pointer py-2 px-4", currentTab == "expense" && "bg-white rounded-md shadow")}
+                onClick={() => {
+                  setCurrentTab("expense");
+                }}
+              >
+                Add Expense
+              </button>
+              <button
+                className={clsx("hover:cursor-pointer py-2 px-4", currentTab == "income" && "bg-white rounded-md shadow")}
+                onClick={() => {
+                  setCurrentTab("income");
+                }}
+              >
+                Add Income
+              </button>
+              <button
+                className={clsx("hover:cursor-pointer py-2 px-4", currentTab == "categories" && "bg-white rounded-md")}
+                onClick={() => {
+                  setCurrentTab("categories");
+                }}
+              >
+                Categories
+              </button>
+              <button
+                className={clsx("hover:cursor-pointer py-2 px-4", currentTab == "accounts" && "bg-white rounded-md shadow")}
+                onClick={() => {
+                  setCurrentTab("accounts");
+                }}
+              >
+                Accounts
+              </button>
+            </div>
+          </div>
+
+          <div className="overflow-x-hidden ">
+            {currentTab === "transactions" && <Transactions userData={userData} />}
+            {currentTab === "expense" && <Expense userData={userData} />}
+            {currentTab === "income" && <Income userData={userData} />}
+            {currentTab === "categories" && <Category userData={userData} />}
+            {currentTab === "accounts" && <Accounts />}
+          </div>
         </div>
+        <div className="flex-1"></div>
       </div>
     </div>
   );

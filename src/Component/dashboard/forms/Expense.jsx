@@ -109,7 +109,7 @@ export default function Expense({userData}) {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+    <div className="max-w-2xl w-full mx-auto p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Add Expense</h1>
         <p className="text-gray-500">Record a new expense transaction</p>

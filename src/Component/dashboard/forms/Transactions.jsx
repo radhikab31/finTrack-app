@@ -6,7 +6,7 @@ export default function Transactions({userData}) {
   const transactionList = userData?.transactions ? Object.entries(userData.transactions).map(([id, data]) => ({id, ...data})) : [];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+    <div className="bg-white w-full rounded-2xl shadow-lg border border-gray-100 p-6 max-w-2xl">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">Transaction History</h2>
         <p className="text-gray-500">All transactions for {new Date().toISOString().slice(0, 7)}</p>
